@@ -315,7 +315,7 @@ If you downloaded the .bz2 use `tar xvfj FILE_NAME`
 
 * Figure out all of the include directories that clang uses
 
-* Check waht include directories gcc uses  
+* Check what include directories gcc uses  
 `cpp -v`
 
 * Select a directory that clang uses, for example we will use  
