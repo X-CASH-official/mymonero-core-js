@@ -20,7 +20,7 @@
 
 See `LICENSE.txt` for license.
 
-All source code copyright © 2014-2018 by MyMonero. All rights reserved.
+All source code Copyright (c) 2018-2019 X-CASH Project, Derived from 2014-2018 by MyMonero. All rights reserved.
 
 ## What's in This Repo?
 
@@ -265,86 +265,81 @@ async__send_funds
 * This method takes simple, familiar parameters in the form of a keyed dictionary, and has a handful of callbacks which supply pre-formed request parameters for sending directly to a MyMonero or lightweight wallet-compatible API server. Responses may be sent directly back to the callbacks' callbacks, as they are now parsed and handled entirely within the implementation. This function's interface used to reside in `monero_sendingFunds_utils`. See `tests/sendingFunds.spec.js` for example usage.
 
 
-# Contributing
-
-## QA
-
-Please submit any bugs as Issues unless they have already been reported.
-
-Suggestions and feedback are very welcome!
-
-## Pull Requests
-
-We'll merge nearly anything constructive. Contributors welcome and credited in releases.
-
-We often collaborate over IRC in #mymonero on Freenode.
-
-**All development happens off the `develop` branch like the Gitflow Workflow.**
-
 ## Building MyMoneroCoreCpp from Scratch
 
 There's no need to build monero_utils/MyMoneroCoreCpp as a build is provided, but if you were for example interested in adding a C++ function, you could use the information in this section to transpile it to JS.
 
-### Repository Setup
+### Building
 
-* Execute `bin/update_submodules` 
+* Install the dependencies  
+`apt install git build-essential`
 
+* Clone the repository  
+`git clone https://github.com/X-CASH-official/mymonero-core-js.git`
 
-### Install Emscripten SDK
+* Clone the Emscripten SDK repository  
+`git clone https://github.com/emscripten-core/emsdk.git`
 
-**A version of emscripten of at least 1.38.13 with [these updates](https://github.com/kripken/emscripten/pull/7096) is required so that random bit generation safety can be ensured.**
+* CD into the folder  
+`cd emsdk`
 
-Ensure you've [properly installed Emscripten](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html) and exposed the Emscripten executables in your PATH, e.g.:
+* Reset the repository to this specific commit  
+`git reset --hard 76a5ae0b82fa5e9cad54cdb90130a5550258ade9`
 
-	source ./emsdk_env.sh
+* Install the Emscripten SDK using the [instructions](https://emscripten.org/docs/getting_started/downloads.html)
 
+* CD into the folder  
+`cd ~/mymonero-core-js`
 
-### Boost for Emscripten
+* Update the submodules  
+`bin/update_submodules`
 
-*Depends upon:* Emscripten SDK
+* Download [boost](https://www.boost.org/users/download/) into the specific folder  
+`mkdir contrib && cd contrib && wget LINK_TO_BOOST_SOURCE_CODE (either the gz or bz2)`
 
-Download a copy of the contents of the Boost source into `./contrib/boost-sdk/`.
+* Extract [boost](https://www.boost.org/users/download/)  
+If you downloaded the .gz use `tar xvfz FILE_NAME`  
+If you downloaded the .bz2 use `tar xvfj FILE_NAME`
 
-* Execute `bin/build-boost-emscripten.sh`
+* Rename the boost folder to boost-sdk  
+`mv BOST_FOLDER_NAME boost-sdk`
 
+* Build boost  
+`cd ../../ && bin/build-boost-emscripten.sh`
 
+* Create this test file  
+`echo -e '#include <stdio.h>\n\nint main() {\nprintf("Hello world");\n}' > file.cpp`
 
-### Emscripten Module
+* Compile it  
+`clang++ -c file.cpp -v`
 
-*Depends upon:* Repository Setup, Emscripten SDK, Boost for Emscripten
+* Figure out all of the include directories that clang uses
 
-* Execute `bin/build-emcpp.sh`
+* Check waht include directories gcc uses  
+`cpp -v`
 
-Or if you want to copy the build products to their distribution locations, 
+* Select a directory that clang uses, for example we will use  
+`/usr/include/x86_64-linux-gnu`
 
-* Execute `bin/archive-emcpp.sh`
+* Copy All files from the gcc include directories that contain stddef.h and limits.h into this selected directory  
+`cp -a /usr/lib/gcc/x86_64-linux-gnu/7/include/* /usr/include/x86_64-linux-gnu/ && cp -a /usr/lib/gcc/x86_64-linux-gnu/7/include-fixed* /usr/include/x86_64-linux-gnu/`
+
+* Run the build script  
+`bin/build-emcpp.sh`
+
+It will generate the build files and give an error about how you need to compile with C++11
+
+* Edit the build files  
+`nano build/CMakeCache.txt`
+
+* Add `-std=c++11` to `CMAKE_CXX_FLAGS:STRING=`
+
+* Edit CMakeLists.txt  
+`nano CMakeLists.txt`
+
+* Edit the `boost_DIR` variable to `set(boost_DIR PATH_TO_REPOSITORY/bin/build/boost)`
+
+* Run the build script  
+`bin/build-emcpp.sh`
 
 **NOTE** If you want to build for asmjs instead of wasm, edit `CMakeLists.txt` to turn the `MM_EM_ASMJS` option to `ON` before you run either the `build` or `archive` script. Finally, at every place you instantiate a `MyMoneroCoreBridge` instance, ensure that the `asmjs` flag passed as an init argument is set to `true` (If not, loading will not work). 
-
-
-## Maintainers and Advisors
-
-* 💿 `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Maintainer
-
-* 🍄 `luigi` Major contiributor of original JS core crypto and Monero-specific routines; Advisor
-
-
-## Authors
-
-* Paul Shapiro
-
-* luigi1111
-
-* Lucas Jones     
-
-* gutenye
-
-* HenryNguyen5
-
-* cryptochangements34
-
-* bradoyler
-
-* rex4539
-
-* paullinator
