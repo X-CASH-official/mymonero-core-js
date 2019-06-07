@@ -35,7 +35,7 @@ function _mixinToRingsize(mixin) {
 }
 //
 function thisFork_minMixin() {
-	return 10;
+	return 20;
 }
 function thisFork_minRingSize() {
 	return _mixinToRingsize(thisFork_minMixin());
