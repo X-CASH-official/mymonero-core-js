@@ -305,7 +305,7 @@ If you downloaded the .bz2 use `tar xvfj FILE_NAME`
 `mv BOST_FOLDER_NAME boost-sdk`
 
 * Build boost  
-`cd ../../ && bin/build-boost-emscripten.sh`
+`cd ../ && bin/build-boost-emscripten.sh`
 
 * Create this test file  
 `echo -e '#include <stdio.h>\n\nint main() {\nprintf("Hello world");\n}' > file.cpp`
